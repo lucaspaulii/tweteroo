@@ -4,8 +4,10 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 
-const users = [];
-const tweets = [];
+const users = [
+];
+const tweets = [
+];
 
 app.post("/sign-up", (req, res) => {
   const { username, avatar } = req.body;
@@ -32,6 +34,20 @@ app.post("/tweets", (req, res) => {
 })
 
 app.get("/tweets", (req, res) => {
+    let avatar
+    const tweetsToDisplay = tweets.map(obj => {
+        users.forEach(a => {
+            if (a.username === obj.username){
+                avatar = a.avatar
+            }
+        })
+        return {
+            username: obj.username,
+            avatar,
+            tweet: obj.tweet
+        }
+    })
+    res.send(tweetsToDisplay)
 })
 
 app.listen(5000);
