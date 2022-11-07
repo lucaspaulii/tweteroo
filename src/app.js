@@ -23,10 +23,6 @@ app.post("/sign-up", (req, res) => {
   res.status(201).send("OK");
 });
 
-app.get("/sign-up", (req, res) => {
-  res.send(users);
-});
-
 app.post("/tweets", (req, res) => {
   const { tweet } = req.body;
   const { user } = req.headers;
