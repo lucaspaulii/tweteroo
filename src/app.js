@@ -5,111 +5,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const users = [
-  {
-    username: "banana1",
-    avatar:
-      "https://i.kym-cdn.com/entries/icons/facebook/000/016/366/1409630808061.jpg",
-  },
-  {
-    username: "banana2",
-    avatar:
-      "https://ih1.redbubble.net/image.401351309.6259/flat,750x,075,f-pad,750x1000,f8f8f8.u1.jpg",
-  },
-  {
-    username: "banana3",
-    avatar:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvgpDxBnV5GI76ZexOoMP-9B6kmuHyCwnZ1w&usqp=CAU",
-  },
-  {
-    username: "banana4",
-    avatar:
-      "https://image.shutterstock.com/image-vector/funny-meme-banana-cute-face-260nw-1901876971.jpg",
-  },
-];
+const users = [];
 
-const tweets = [
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana1",
-    tweet: "blablabla1",
-  },
-  {
-    username: "banana4",
-    tweet: "blablabla4",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "blablabla3",
-  },
-  {
-    username: "banana3",
-    tweet: "last dance",
-  },
-];
+const tweets = [];
 
 app.post("/sign-up", (req, res) => {
   const { username, avatar } = req.body;
@@ -130,7 +28,9 @@ app.get("/sign-up", (req, res) => {
 });
 
 app.post("/tweets", (req, res) => {
-  const { username, tweet } = req.body;
+  const { tweet } = req.body;
+  const { user } = req.headers;
+  const username = user;
   if (!username || !tweet) {
     res.sendStatus(400);
     return;
@@ -150,6 +50,7 @@ app.post("/tweets", (req, res) => {
 
 app.get("/tweets", (req, res) => {
   let avatar;
+  const page = parseInt(req.query.page);
   const tweetsToDisplay = tweets
     .slice(0)
     .reverse()
@@ -165,10 +66,19 @@ app.get("/tweets", (req, res) => {
         tweet: obj.tweet,
       };
     });
-  const last10Tweets = tweetsToDisplay.slice(0, 10);
-  console.log(tweetsToDisplay);
-  console.log(last10Tweets);
-  res.send(last10Tweets);
+  if (!page || page === 1) {
+    const last10Tweets = tweetsToDisplay.slice(0, 10);
+    res.send(last10Tweets);
+    return;
+  }
+  if (page < 1) {
+    res.status(400).send("Informe uma página válida!");
+    return;
+  }
+  const lastTweet = page * 10;
+  const firstTweet = page * 10 - 10;
+  const trimmedTweets = tweetsToDisplay.slice(firstTweet, lastTweet);
+  res.send(trimmedTweets);
 });
 
 app.get("/tweets/:username", (req, res) => {
