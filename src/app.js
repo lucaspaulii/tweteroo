@@ -84,7 +84,6 @@ app.get("/tweets/:username", (req, res) => {
     res.sendStatus(400);
     return;
   }
-  console.log(userExists);
   const userTweets = tweets.filter((obj) => {
     return obj.username === username;
   });
